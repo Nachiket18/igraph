@@ -101,18 +101,44 @@ std::set<igraph_integer_t> fetchSetsBasedonIndex(igraph_integer_t index)
 	return key;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+igraph_integer_t factorial ( igraph_integer_t n)
+{
+	igraph_integer_t answer = 1;
+	for (igraph_integer_t i = 1 ; i <= n; i ++)
+	{
+		answer *= i;
+	}
+	return answer;
+}
+
+igraph_integer_t Combination (igraph_integer_t n, igraph_integer_t r)
+{
+	return factorial(n)/ (factorial(n-r) * factorial(r));
+}
 igraph_error_t generate_steiner_tree_appx(const igraph_t* graph,const igraph_vector_t *weights,
                                        igraph_matrix_t dp_cache, std::set<igraph_integer_t> SetD , igraph_integer_t q, igraph_neimode_t mode)
 {
 	
 	igraph_integer_t indexD  = fetchIndexofMapofSets(SetD);
-	//igraph_integer_t min_col_num = 0;
+	igraph_integer_t min_col_num = 0;
 	igraph_integer_t min_sum_for_col = igraph_matrix_get(&dp_cache,q,0) + igraph_matrix_get(&dp_cache,indexD,0);
 	for (igraph_integer_t i = 1; i < dp_cache.ncol ; i++)
 	{
 		if ((igraph_matrix_get(&dp_cache,q,i) + igraph_matrix_get(&dp_cache,indexD,i)) < min_sum_for_col )
 		{
-			//min_col_num = i;
+			min_col_num = i;
 			min_sum_for_col = (igraph_matrix_get(&dp_cache,q,i) + igraph_matrix_get(&dp_cache,indexD,i));
 		}
 	}
@@ -153,11 +179,28 @@ igraph_error_t generate_steiner_tree_appx(const igraph_t* graph,const igraph_vec
 	igraph_vs_destroy(&vs);
 	igraph_eit_destroy(&eit);
 	igraph_es_destroy(&es);
-	// igraph_integer_t shortestpath = igraph_get_shortest_path_dijkstra(graph,)
-	// igraph_integer_t combination_value  = Combination(SetD.size(), SetD.size() -1);
+	igraph_integer_t shortestpath = igraph_get_shortest_path_dijkstra(graph, &vectoridlist,&edgeidlist,q,min_col_num,weights,IGRAPH_ALL);
+	std :: cout << "FUCK" << shortestpath <<std::endl;
+	//igraph_integer_t combination_value  = Combination(SetD.size(), SetD.size() -1);
 	return IGRAPH_SUCCESS;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 igraph_error_t igraph_steiner_dreyfus_wagner(const igraph_t *graph,const igraph_vector_int_t* steiner_terminals,
@@ -379,18 +422,5 @@ igraph_neimode_t mode, const igraph_vector_t *weights,igraph_real_t *res)
 
 }
 
-igraph_integer_t factorial ( igraph_integer_t n)
-{
-	igraph_integer_t answer = 1;
-	for (igraph_integer_t i = 1 ; i <= n; i ++)
-	{
-		answer *= i;
-	}
-	return answer;
-}
 
-igraph_integer_t Combination (igraph_integer_t n, igraph_integer_t r)
-{
-	return factorial(n)/ (factorial(n-r) * factorial(r));
-}
 
